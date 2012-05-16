@@ -1,0 +1,31 @@
+#-------------------------------------------------------------------------------
+# Template:
+#---
+#app title                  # app TITLE string is used for window identification
+#	case_sensitive: true/false # default false
+#	desktop: number        # default actual desktop number
+#	
+#	resize: width,height/maximize/fullscreen
+#	move: x, y             # x, y = numbers; 0, 0 = left upper corner
+#	
+#	launch: app_name       # run this application, always case sensitive
+#	wait: seconds          # wait until application starts (useful when  started externaly)
+#---
+# Example:
+#---
+#firefox               # aplication containing 'firefox' in window title
+#	launch: firefox   # launch binary called firefox
+#	desktop: 5        # move firefox into desktop 5
+#	resize: maximize  # maximize it
+#	wait: 50          # wait max 50s to firefox window
+#-------------------------------------------------------------------------------
+
+thunderbird
+	launch: thunderbird
+	desktop: 0
+	
+	resize: maximize
+	move: 0, 0
+	
+	wait: 100
+
