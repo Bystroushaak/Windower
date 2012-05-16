@@ -1,0 +1,9 @@
+title string
+	desktop: number        # default actual desktop number
+	
+	maximize: true/false   # default false
+	
+	x: number              # default 0
+	y: 0                   # default 0
+	
+	wait: true/false       # default false
