@@ -1,25 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# NONAME v0.0.0 (dd.mm.yy) by Bystroushaak (bystrousak@kitakitsune.org)
+# namespace conf parser v1.0.0 (16.05.2012) by Bystroushaak (bystrousak@kitakitsune.org)
 # This work is licensed under a Creative Commons 3.0 
 # Unported License (http://creativecommons.org/licenses/by/3.0/).
-# Created in Geany text editor.
+# Created in gedit text editor.
 #
 # Notes:
     # 
-#= Imports =====================================================================
 
-
-
-#= Variables ===================================================================
-
-
-
-#= Functions & objects =========================================================
-def parseConf(fn):
+def parseConf(fn, case_sensitive_key = False, case_sensitive_val = False, case_sensitive_namespace = False):
+	"""
+	Parse configuration in this format:
+	
+	#---
+	namespace
+		key: val # comment
+	#---
+	
+	to:
+	
+	{"namespace" : {"key":"val"}}
+	"""
 	f = open(fn)
-	data = f.read().splitlines()
+	data = f.read()
+	data = data.splitlines()
 	f.close()
 	
 	data = map(lambda x: x.split("#")[0], data) # remove comments
@@ -37,21 +42,14 @@ def parseConf(fn):
 				key = line
 				val = "true"
 				
-			out[namespace][key.strip()] = val.strip()
+			out[namespace][key.strip() if case_sensitive_key else key.strip().lower()] = val.strip()if case_sensitive_val else val.strip().lower() 
 		else:
-			namespace = line.strip()
+			namespace = line.strip() if case_sensitive_namespace else line.strip().lower() 
 			out[namespace] = {}
 	
 	return out
 
 
 #= Main program ================================================================
-
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+	pass
