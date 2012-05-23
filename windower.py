@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Windower - virtual desktop windows positioner v1.0.0 (16.05.2012) by Bystroushaak (bystrousak@kitakitsune.org)
+# Windower - virtual desktop windows positioner v1.2.0 (23.05.2012) by Bystroushaak (bystrousak@kitakitsune.org)
 # This work is licensed under a Creative Commons 3.0 
 # Unported License (http://creativecommons.org/licenses/by/3.0/).
 # Created in gedit text editor.
@@ -34,11 +34,14 @@ except AttributeError:
 
 
 #= Variables ===================================================================
-CONF_NAME = "config.txt"
+CONF_NAME = "windower_config.txt"
 
 
 
 #= API =========================================================================
+def _debugMsg(m):
+	print m
+
 def checkWmctrl():
 	"Check if wmctrl is installed."
 	
@@ -81,12 +84,12 @@ def getDekstopCount():
 
 
 def getActualDesktop():
-	"Returns number of currently used desktop."
+	"Returns number identifying currently used desktop."
 	
 	i = 0
 	for l in subprocess.check_output("wmctrl -d", shell=True).splitlines():
 		if "*" in l:
-			return str(i)
+			return int(i)
 		
 		i += 1
 	
@@ -97,6 +100,17 @@ def moveAppHere(app_hash):
 	"Move application identified by hash (see grepWindowName()) to this desktop."
 	
 	os.system("wmctrl -iR " + str(app_hash))
+
+
+def getAppDesktop(app_hash):
+	"Return number of desktop with app identified by app_hash."
+
+	out = []
+	
+	for l in subprocess.check_output("wmctrl -l | grep " + str(app_hash), shell=True).strip().splitlines():
+		out.append(l.split()[1])
+	
+	return out
 
 
 def maximizeWindow(app_hash):
@@ -138,44 +152,65 @@ if __name__ == "__main__":
 			else:
 				win_id = grepWindowName(app_title)
 			
-			if "launch" not in conf[app_title]:
-				# wait until app start
-				if "waiting" in conf[app_title] and conf[app_title]["waiting"] > time.time() and len(win_id) == 0:
-					continue
-			
-				# if app title not found in list of running apps, try again or remove app from todo
-				if len(win_id) == 0:
-					if "wait" in conf[app_title]:
-						if "waiting" in conf[app_title]:
-							del conf[app_title]
-							continue
-					
-						conf[app_title]["waiting"] = time.time() + int(conf[app_title]["wait"])
-					
-						print "waiting", conf[app_title]["wait"], "for", app_title
-					else:
-						sys.stderr.write("Window with title '" + app_title + "' not found! Skipping..\n")
-						del conf[app_title]
-				
-					continue
-			
+			# launch app
 			if "launch" in conf[app_title]:
-				print "Launching '" + conf[app_title]["launch"] + "' .."
+				_debugMsg("Launching '" + conf[app_title]["launch"] + "' ..")
 				os.system(conf[app_title]["launch"] + " > /dev/null 2>&1 &")
-				del conf[app_title]["launch"]
 				
 				if "waiting" not in conf[app_title]:
-					conf[app_title]["waiting"] = time.time() + 30
+					conf[app_title]["waiting"] = time.time() + 100
+				
+				del conf[app_title]["launch"]
+			
+			# wait until app starts
+			if "waiting" in conf[app_title] and conf[app_title]["waiting"] > time.time() and len(win_id) == 0:
+				continue
+			
+			# if app title not found in list of running apps, try again or remove app from todo
+			if len(win_id) <= 0:
+				if "wait" in conf[app_title]:
+					# if waiting already activated and passed
+					if "waiting" in conf[app_title]:
+						_debugMsg("App " + app_title + " still not running even after " + conf[app_title]["waiting"] + "s, skipping..")
+						
+						del conf[app_title]
+						continue
+					
+					conf[app_title]["waiting"] = time.time() + int(conf[app_title]["wait"])
+					
+					_debugMsg("Waiting " + conf[app_title]["wait"] + " for " + app_title)
+				else:
+					sys.stderr.write("Window with title '" + app_title + "' not found! Skipping..\n")
+					del conf[app_title]
 				
 				continue
 			
+			
 			for wid in win_id:
-				if "desktop" in conf[app_title] and conf[app_title]["desktop"] != getActualDesktop():
+				if "desktop" in conf[app_title] and conf[app_title]["desktop"] != str(getActualDesktop()):
+					_debugMsg("Switching to desktop" + conf[app_title]["desktop"])
+					max_try = 10
+
 					try:
-						switchToDesktop(int(conf[app_title]["desktop"]))
-						time.sleep(0.2)
-						moveAppHere(wid)
-						time.sleep(0.5)
+						desktop = int(conf[app_title]["desktop"])
+						
+						# wait until desktop is really switched
+						try_cnt = 0
+						while getActualDesktop() != desktop and try_cnt <= max_try:
+							switchToDesktop(desktop)
+							time.sleep(1)
+							try_cnt += 1
+						if try_cnt > max_try:
+							_debugMsg("Wating for desktop switch timeouted.")
+						
+						# wait until app is moved to given desktop
+						try_cnt = 0
+						while str(getAppDesktop(wid)[0]) != str(desktop) and try_cnt <= max_try:
+							moveAppHere(wid)
+							time.sleep(1)
+							try_cnt += 1
+						if try_cnt > max_try:
+							_debugMsg("Wating for app (" + app_title + ") desktop move timeouted.")
 					except IndexError, e:
 						sys.stderr.write(str(e) + "\n")
 					except ValueError, e:
@@ -205,7 +240,7 @@ if __name__ == "__main__":
 						
 						try:
 							moveToCoordinates(wid, int(x.strip()), int(y.strip()))
-							time.sleep(0.3)
+							time.sleep(0.5)
 						except ValueError, e:
 							sys.stderr.write("Can't move window '" + app_title + "', to given parameters '" + conf[app_title]["move"] + "'!\n")
 							sys.stderr.write(str(e) + "\n")
@@ -213,5 +248,9 @@ if __name__ == "__main__":
 						sys.stderr.write("Unsupported argument '" + conf[app_title]["move"] + "'!\n")
 				
 				del conf[app_title]
+				
+				# don't go thru other win_ids, if already removed from app list
+				if len(win_id) > 1:
+					break
 			
-			time.sleep(5)
+			time.sleep(2)
