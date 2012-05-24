@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Windower - virtual desktop windows positioner v1.2.0 (23.05.2012) by Bystroushaak (bystrousak@kitakitsune.org)
+# Windower - virtual desktop windows positioner v1.3.0 (24.05.2012) by Bystroushaak (bystrousak@kitakitsune.org)
 # This work is licensed under a Creative Commons 3.0 
 # Unported License (http://creativecommons.org/licenses/by/3.0/).
 # Created in gedit text editor.
@@ -22,25 +22,27 @@ try:
 except AttributeError:
 	try:
 		import commands
+		class subprocess_cl:
+			def __init__(self):
+				pass
+			def check_output(self, command, shell=True):
+				return commands.getoutput(command)
+		del subprocess
+		subprocess = subprocess_cl()
 	except ImportError:
-		sys.stderr.write("Heh, now you are fucked. Try different version of python.\n")
-		sys.exit(1)
-	
-	def check_output(command, shell=True):
-		return commands.getoutput(command)
-	
-	subprocess.check_output = check_output
-
-
+		raise ImportError("Heh, now you are fucked - you have old subprocess and don't have commands module.\nTry different python version.")
 
 #= Variables ===================================================================
-CONF_NAME = "windower_config.txt"
+CONF_NAME = "config_windower.txt"
+QUIET     = True
 
 
 
 #= API =========================================================================
 def _debugMsg(m):
-	print m
+	if not QUIET:
+		print m
+
 
 def checkWmctrl():
 	"Check if wmctrl is installed."
@@ -63,7 +65,7 @@ def grepWindowName(wn, case_sensitive=False):
 		for l in subprocess.check_output("wmctrl -l | grep " + cs + " \"" + str(wn) + "\"", shell=True).strip().splitlines():
 			out.append(l.split()[0])
 	except subprocess.CalledProcessError, e:
-		pass
+		print e
 	
 	return out
 
@@ -136,6 +138,17 @@ def resizeWindow(app_hash, x_size, y_size):
 
 #= Main program ================================================================
 if __name__ == "__main__":
+	import argparse
+	
+	parser = argparse.ArgumentParser(description = "Windower - script for moving windows to virtual desktops.")
+	parser.add_argument("-q", "--quiet", action="store_true", default=False, help="Be quiet.")
+	parser.add_argument("-c", "--config", action="store", type=str, default=CONF_NAME, help="Path to configuration file. Default is " + CONF_NAME)
+	args = parser.parse_args()
+	
+	QUIET     = args.quiet
+	CONF_NAME = args.config
+	
+	
 	if not checkWmctrl():
 		sys.stderr.write("This program is only wrapper over 'wmctrl'. You have to install 'wmctrl'!\n")
 		sys.exit(1)
@@ -171,14 +184,14 @@ if __name__ == "__main__":
 				if "wait" in conf[app_title]:
 					# if waiting already activated and passed
 					if "waiting" in conf[app_title]:
-						_debugMsg("App " + app_title + " still not running even after " + conf[app_title]["waiting"] + "s, skipping..")
+						_debugMsg("App " + app_title + " still not running even after " + str(conf[app_title]["waiting"]) + "s, skipping..")
 						
 						del conf[app_title]
 						continue
 					
 					conf[app_title]["waiting"] = time.time() + int(conf[app_title]["wait"])
 					
-					_debugMsg("Waiting " + conf[app_title]["wait"] + " for " + app_title)
+					_debugMsg("Waiting " + conf[app_title]["wait"] + "s for " + app_title)
 				else:
 					sys.stderr.write("Window with title '" + app_title + "' not found! Skipping..\n")
 					del conf[app_title]
@@ -189,7 +202,7 @@ if __name__ == "__main__":
 			for wid in win_id:
 				if "desktop" in conf[app_title] and conf[app_title]["desktop"] != str(getActualDesktop()):
 					_debugMsg("Switching to desktop" + conf[app_title]["desktop"])
-					max_try = 10
+					max_try = 50
 
 					try:
 						desktop = int(conf[app_title]["desktop"])
@@ -198,7 +211,7 @@ if __name__ == "__main__":
 						try_cnt = 0
 						while getActualDesktop() != desktop and try_cnt <= max_try:
 							switchToDesktop(desktop)
-							time.sleep(1)
+							time.sleep(0.1)
 							try_cnt += 1
 						if try_cnt > max_try:
 							_debugMsg("Wating for desktop switch timeouted.")
@@ -207,10 +220,10 @@ if __name__ == "__main__":
 						try_cnt = 0
 						while str(getAppDesktop(wid)[0]) != str(desktop) and try_cnt <= max_try:
 							moveAppHere(wid)
-							time.sleep(1)
+							time.sleep(0.1)
 							try_cnt += 1
 						if try_cnt > max_try:
-							_debugMsg("Wating for app (" + app_title + ") desktop move timeouted.")
+							_debugMsg("Waiting for app (" + app_title + ") desktop move timeouted.")
 					except IndexError, e:
 						sys.stderr.write(str(e) + "\n")
 					except ValueError, e:
@@ -253,4 +266,4 @@ if __name__ == "__main__":
 				if len(win_id) > 1:
 					break
 			
-			time.sleep(2)
+			time.sleep(1)
