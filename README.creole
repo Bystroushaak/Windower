@@ -6,7 +6,7 @@ Script pro organizaci oken na vícero virtuálních plochách.
  na zadané virtuální plochy.
  
  Jako bonus umožňuje okna maximalizovat a posouvat na zadané souřadnice, což je 
- obvzvlášť užitečné, pokud máte více monitorů, které se na venek tváří jako 
+ obvzvlášť užitečné, pokud máte více monitorů, které se navenek tváří jako 
  jeden velký. Dál se dá měnit šířka a výška okna a spouštět zadané příkazy na
  pozadí.
 
@@ -16,17 +16,17 @@ Script pro organizaci oken na vícero virtuálních plochách.
 {{{
 # komentáře jsou uvozeny mřížkou
 titulek aplikace               # řetězec, který se hledá v titulku oken otevřených apliací
-	case_sensitive: true/false # určuje zda má být titulek prohledáván s ohledem na velká/malá písmena. Pokud není uveden, false
+	case_sensitive: true/false # určuje, zda má být titulek prohledáván s ohledem na velká/malá písmena. Pokud není uveden, false
 	desktop: number        # číslo plochy, na kterou si přejete přesunout aplikaci
 	
 	resize: width,height/maximize/fullscreen # změnit velikost na šířku,výšku/maximalizovat/přepnout na fullscreen
 	move: x, y             # přemístit aplikaci na x, y koordináty; 0, 0 = levý horní roh obrazovky
 	
-	launch: app_name       # spustit příkaz app_name, vhodné pokud aplikace není spuštěná a teprve jí pouštíte
+	launch: app_name       # spustit příkaz app_name, vhodné pokud aplikace není spuštěná a teprve ji pouštíte
 	wait: seconds          # určuje, jak dlouho se má čekat na spuštění aplikace
 }}}
 
-Určení náležitosti příkazů k jednotlivým aplikacím probíhá odsazením a je jedno
+Určení náležitosti příkazů k jednotlivým aplikacím probíhá odsazením a je jedno,
 jestli použijete taby, nebo mezery, nebo nějakou kombinci.
 
 ----
@@ -35,16 +35,16 @@ jestli použijete taby, nebo mezery, nebo nějakou kombinci.
 Script for window organization over multiple virtual desktops.
 
 == How it works
- When launched, script moves windows specified in configuration file to given
- virtual desktops.
+ When launched, the script moves windows specified in its configuration file to 
+ given virtual desktops.
  
- As bonus, you can maximize and move windows to selected coordinates, which is
- pretty useful, if you have multiple displays, which acts as one big screen.
+ As a bonus, you can maximize and move windows to selected coordinates, which is
+ pretty useful if you have multiple displays acting as one big screen.
  Another feature is width & height change and command launching.
  
 == Configuration file
 {{{
-app title                      # string which identifies application window from list of app titles
+app title                      # string identifiying the application window in the list of app titles
 	case_sensitive: true/false # is 'app title' case sensitive?
 	desktop: number        # move to desktop 'number'
 	
@@ -52,5 +52,8 @@ app title                      # string which identifies application window from
 	move: x, y             # x, y = numbers; 0, 0 = left upper corner
 	
 	launch: app_name       # run this application, always case sensitive, useful if app is not externally launched
-	wait: seconds          # wait until application starts (useful if started externally)
+	wait: seconds          # wait until the application starts (useful if started externally)
 }}}
+
+= Thx
+[[https://plus.google.com/104718562319504899928/posts|w]] for spellcheck.
