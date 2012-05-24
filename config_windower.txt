@@ -19,13 +19,13 @@
 #	resize: maximize  # maximize it
 #	wait: 50          # wait max 50s to firefox window
 #-------------------------------------------------------------------------------
-
-thunderbird
-	launch: thunderbird
-	desktop: 0
-	
-	resize: maximize
-	move: 0, 0
-	
-	wait: 100
+#
+#thunderbird
+#	launch: thunderbird
+#	desktop: 0
+#	
+#	resize: maximize
+#	move: 0, 0
+#	
+#	wait: 100
 
