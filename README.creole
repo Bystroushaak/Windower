@@ -1,6 +1,7 @@
-Windower; script pro organizaci oken na vícero virtuálních plochách.
+= Windower
+Script pro organizaci oken na vícero virtuálních plochách.
 
-= Jak to funguje: ==============================================================
+== Jak to funguje
  Script po svém spuštění na základě konfiguračního souboru přesune zadaná okna 
  na zadané virtuální plochy.
  
@@ -9,12 +10,12 @@ Windower; script pro organizaci oken na vícero virtuálních plochách.
  jeden velký. Dál se dá měnit šířka a výška okna a spouštět zadané příkazy na
  pozadí.
 
-= Konfigurační soubor: =========================================================
+== Konfigurační soubor
  Aplikace používá konfigurační soubor v jednoduchém formátu:
 
->>
+{{{
 # komentáře jsou uvozeny mřížkou
-titulek aplikace           # řetězec, který se hledá v titulku oken otevřených apliací
+titulek aplikace               # řetězec, který se hledá v titulku oken otevřených apliací
 	case_sensitive: true/false # určuje zda má být titulek prohledáván s ohledem na velká/malá písmena. Pokud není uveden, false
 	desktop: number        # číslo plochy, na kterou si přejete přesunout aplikaci
 	
@@ -23,18 +24,17 @@ titulek aplikace           # řetězec, který se hledá v titulku oken otevřen
 	
 	launch: app_name       # spustit příkaz app_name, vhodné pokud aplikace není spuštěná a teprve jí pouštíte
 	wait: seconds          # určuje, jak dlouho se má čekat na spuštění aplikace
-<<
+}}}
 
 Určení náležitosti příkazů k jednotlivým aplikacím probíhá odsazením a je jedno
 jestli použijete taby, nebo mezery, nebo nějakou kombinci.
 
---------------------------------------------------------------------------------
-================================================================================
---------------------------------------------------------------------------------
+----
 
-Windower; script for window organization over multiple virtual desktops.
+= Windower
+Script for window organization over multiple virtual desktops.
 
-= How it works: ================================================================
+== How it works
  When launched, script moves windows specified in configuration file to given
  virtual desktops.
  
@@ -42,9 +42,9 @@ Windower; script for window organization over multiple virtual desktops.
  pretty useful, if you have multiple displays, which acts as one big screen.
  Another feature is width & height change and command launching.
  
-= Configuration file: ==========================================================
->>
-app title                  # string which identifies application window from list of app titles
+== Configuration file
+{{{
+app title                      # string which identifies application window from list of app titles
 	case_sensitive: true/false # is 'app title' case sensitive?
 	desktop: number        # move to desktop 'number'
 	
@@ -53,4 +53,4 @@ app title                  # string which identifies application window from lis
 	
 	launch: app_name       # run this application, always case sensitive, useful if app is not externally launched
 	wait: seconds          # wait until application starts (useful if started externally)
-<<
+}}}
