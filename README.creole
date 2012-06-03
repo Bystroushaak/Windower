@@ -6,7 +6,7 @@ Script pro organizaci oken na vícero virtuálních plochách.
  na zadané virtuální plochy.
  
  Jako bonus umožňuje okna maximalizovat a posouvat na zadané souřadnice, což je 
- obvzvlášť užitečné, pokud máte více monitorů, které se navenek tváří jako 
+ obzvlášť užitečné, pokud máte více monitorů, které se navenek tváří jako 
  jeden velký. Dál se dá měnit šířka a výška okna a spouštět zadané příkazy na
  pozadí.
 
@@ -15,7 +15,7 @@ Script pro organizaci oken na vícero virtuálních plochách.
 
 {{{
 # komentáře jsou uvozeny mřížkou
-titulek aplikace               # řetězec, který se hledá v titulku oken otevřených apliací
+titulek aplikace               # řetězec, který se hledá v titulku oken otevřených aplikací
 	case_sensitive: true/false # určuje, zda má být titulek prohledáván s ohledem na velká/malá písmena. Pokud není uveden, false
 	desktop: number        # číslo plochy, na kterou si přejete přesunout aplikaci
 	
